@@ -1,0 +1,50 @@
+CREATE DATABASE <name>;
+SHOW DATABASES / TABLES / COLUMNS, etc IN <name>;
+USE <name>;
+DESCRIBE <name>;
+ CREATE TABLE employees (
+            id INT,		// <tablename(but it's the fieldname)_id> = the (1st col) primary key of that table (Sakila type db)
+            birth_date DATE,
+            first_name VARCHAR(15),
+            last_name VARCHAR(20),
+            gender ENUM('M', 'F',  'GF', 'NB'),
+            hire_date DATE
+     );				// Any other fields with _id in the name are foreign keys.
+    INSERT INTO employees (id, birth_date, first_name, last_name, gender, hire_date)
+                   VALUES (250001, "2003-12-29", "John", "Jones", "M", "2023-06-01");
+SELECT * FROM <name>;
+  SELECT select_expr [, select_expr] . . . 
+       [FROM table_references] 
+       [JOIN table_references { USING (col_name) | ON (col_name = col_name) }]
+       [WHERE where_condition] ... BETWEEN, IN, NOT, LIKE (% _ wildcards), AND/OR, and operators <>, <, >, =, >=, <=
+       [GROUP BY {col_name | expr | position}, ... ]
+       [ORDER BY  {col_name | expr | position}
+             [ASC | DESC], ... ]
+       [LIMIT row_count];
+SELECT * from city WHERE city LIKE 'Ab%'; // city is a table, but it's also a field in that table.
+	[HAVING MAX(), MIN(), COUNT(), AVG(), and SUM()];
+	SELECT * FROM <table>, COUNT(*) DISTINCT, GROUP BY <fieldname>; or
+	SELECT COUNT(*) FROM <table> GROUP BY <fieldname>; // to count the number of rows in the table, without selecting any of them
+SELECT first_name AS "First Name", last_name AS "Last Name" FROM actor;  AS creates a temporary alias of the field 
+SELECT actor_id, first_name, last_name FROM actor WHERE actor_id < 10;
+
+SQL Variable Types
+
+    Numeric: INTEGER, SMALLINT, BIGINT, NUMERIC (w,d) and DECIMAL(w,d) -- numbers with width w and d decimal places, REAL, DOUBLE PRECISION, FLOAT(p) where p represents the number of binary digits of precision in a floating point number.
+    Character: CHAR(L) where L is the length of a fixed-length character, VARCHAR(L) that supports a max length of L
+    Binary: BIT(L), BLOB(L)
+    Temporal: DATE, TIME, TIMESTAMP
+
+JOINS: // with city and country tables, using ci and co shortcuts for the table names
+
+SELECT <table1>.field, <table2>.field FROM city ci INNER JOIN country co USING (country_id);
+SELECT city.city, country.country (or ci.city, co.country) FROM city ci
+	INNER JOIN country co USING (country_id) // Note that USING requires that the fieldnames be the same between tables (city.city, city.country_id).  If the fieldnames are not the same use ON instead.
+	WHERE ci.city LIKE 'Ab%';
+    SELECT staff.first_name, staff.last_name, store.last_update FROM staff
+    INNER JOIN store  ON (city.country_id = country.country_id)
+    WHERE city.city LIKE 'Ab%';
+
+SELECT staff.staff_id, staff.first_name, staff.last_name, staff.store_id, address.address, city.city, country.country
+FROM staff
+INNER JOIN store USING (store_id), address ON (store.address_id = address.address_id), city USING (city_id), country USING (country_id);
